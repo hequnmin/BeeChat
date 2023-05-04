@@ -6,6 +6,7 @@ var ip = require("ip");
 
 const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
 const server_port = 65432
+
 // var server = dgram.createSocket("udp4");
 var client = dgram.createSocket("udp4");
 
@@ -33,9 +34,10 @@ server.listen(8080, () => {
 
 io.on('connection', (socket) => {
 	console.log('Socket connected:', socket.id);
+
 	socket.on("REGISTER_USER", function (data) {
 		client_name = data.name;
-		const clientAddress = client.address();
+		const clientAddress = client.address();		
 		console.log(`${client_name}, you are about to register yourself with the Server...`);
 		let msg = JSON.stringify({
 			doing: "login",
@@ -111,24 +113,31 @@ client.on("message", (msg, rinfo) => {
 	else {
 		const result = msg.result;
 		if (result.length !== 0) {
-			if (result[0].hasOwnProperty("userno")) {
-				let src_ip = msg.result[0].address;
-				let src_port = msg.result[0].port;
-				peersList.push(result[0].userno);
-				let ackMessage_io = JSON.stringify({
-					username: result[0].userno,
-					userid: peersList.length,
-					address: result[0].address,
-					port: result[0].port
-				});
-				io.emit("NEW_USER", ackMessage_io);
-
-				let ackMessage_client = JSON.stringify({
-					msg_type: "holepunch_ack",
-					client_name: msg.result[0].userno
-				});
-				client.send(ackMessage_client, src_port, src_ip);
-			} else {
+			if (Array.isArray(result)) {//搜索到对方
+				//{"result":[{"userno":"name2","address":"10.15.14.128","port":62004,"lastlogin":"2023-05-04T03:38:24.000Z","mac":"2c:03:c0:72:83:c4"}],"error":{"code":0,"info":""}}
+				if (result[0].hasOwnProperty("userno")) {
+					let src_ip = msg.result[0].address;
+					let src_port = msg.result[0].port;
+					peersList.push(result[0].userno);
+					let ackMessage_io = JSON.stringify({
+						username: result[0].userno,
+						userid: peersList.length,
+						address: result[0].address,
+						port: result[0].port
+					});
+					io.emit("NEW_USER", ackMessage_io);
+	
+					let ackMessage_client = JSON.stringify({
+						msg_type: "holepunch_ack",
+						client_name: msg.result[0].userno
+					});
+					client.send(ackMessage_client, src_port, src_ip);
+				} else {
+				}
+			}
+			else { //登录成功
+				//{"result":{"sign":"138e222aac1cb49ba0c771ac646de063"},"error":{"code":0,"info":""}}
+				io.emit("LOGIN_USER", "true");
 			}
 		}
 	}
