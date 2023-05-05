@@ -13,9 +13,9 @@ const OnlineList = ({ peers, OnSelectedPeer, online ,selectedPeer}) => {
             key={index}
             className="online-list-item"
             style={{
-              width: 150
+              width: "100%"
             }}>
-            <Divider variant="inset" component="li" sx={{ width: 150, display: 'flex', margin: 0 }} />
+            <Divider variant="inset" component="li" sx={{ width: "100%", display: 'flex', margin: 0 }} />
             <ListItemButton
               onClick={() => handleListItemClick(peer)}>
               <ListItemText color="secondary" size="medium">
