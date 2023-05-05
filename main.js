@@ -5,7 +5,7 @@ const { app, BrowserWindow,ipcMain } = electron;
 
 var dgram = require("dgram");
 var client = dgram.createSocket("udp4");
-var ip = require("ip");
+// var ip = require("ip");
 
 const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
 const server_port = 65432
@@ -108,7 +108,7 @@ function createWindow() {
 			data: {
 				mac: "2c:03:c0:72:83:c4",
 				userno: client_name,
-				address: ip.address(),
+				address: "127.0.0.1",
 				port: 4000
 			}
 		});
