@@ -1,25 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron'
+
 import OnlineList from './OnlineList'
 import FindUser from '../components/FindUser'
 
-const ChatBar = ({ socket, SendSelectedPeer ,selectedPeer}) => {
+const ChatBar = ({ SendSelectedPeer ,selectedPeer}) => {
   const [peersList, setPeersList] = useState('');
   const [online, setOnline] = useState('false');
-  useEffect(() => {
-    socket.on('NEW_USER', (data) => setPeersList([...peersList, data]));
-  }, [socket, peersList]);
+  // useEffect(() => {
+  //   ipcRenderer.on('find_user', (data) => setPeersList([...peersList, data]));
+  // }, [peersList]);
   function findPeer(peer) {
     var data = {
       id: peer.length,
       author: localStorage.getItem('userName'),
       findPeer: peer,
     }
-    socket.emit('FIND_USER', data);
+    ipcRenderer.send('FIND_USER', data)
+
   }
+  ipcRenderer.on('find_user', (event,data) => { 
+    setPeersList([...peersList, data])
+  });
   function OnSelectedPeer(peer) {
     SendSelectedPeer(peer);
   }
-  socket.on('PUNCH_SUCCESS', (data) => {
+  ipcRenderer.on('PUNCH_SUCCESS', () => {
     setOnline(true);
   });
   return (

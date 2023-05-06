@@ -30,7 +30,7 @@ class App extends Component {
   state = {
     currentUsername: null,
     currentId: null,
-    socket: io('http://localhost:8080'),
+    // socket: io('http://localhost:8080'),
     messages: [],
     peersList: []
   }
@@ -51,20 +51,13 @@ class App extends Component {
         <HashRouter>
           <Routes>
             <Route exact path="/" element={
-              <Login socket={this.state.socket} />} />
-            <Route path="/chat" element={<Chat socket={this.state.socket} />} />
+              <Login />} />
+            <Route path="/chat" element={<Chat />} />
           </Routes>
         </HashRouter>
       </ThemeProvider>
 
     )
-    // if (this.state.currentScreen === 'usernameForm') {
-    //   return <UsernameForm handleSubmit={this.onUsernameSubmitted} />
-    // }
-
-    // if (this.state.currentScreen === 'chat') {
-    //   return <Chat name={this.state.name} currentId={this.state.currentId} socket={this.state.socket} />
-    // }
   }
 }
 

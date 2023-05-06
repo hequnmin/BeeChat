@@ -31,20 +31,3 @@ const ChatBody = (messages) => {
 };
 
 export default ChatBody;
-// {/* 显示你发送消息的内容 */}
-// <div className="message__container">
-// <div className="message__chats">
-//   <p className="sender__name">You</p>
-//   <div className="message__sender">
-//     <p>Hello there</p>
-//   </div>
-// </div>
-
-// {/*显示你接收消息的内容*/}
-// <div className="message__chats">
-//   <p>Other</p>
-//   <div className="message__recipient">
-//     <p>Hey, I'm good, you?</p>
-//   </div>
-// </div>
-// </div>

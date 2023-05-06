@@ -14,7 +14,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/ip": "^1.1.0",
-    "ip": "^1.1.8",
+    "bufferutil": "^4.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-linkify": "^1.0.0-alpha",
@@ -27,7 +27,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "watch": "webpack --config webpack.config.js --watch"
+    "watch": "webpack --config webpack.config.js --watch",
+    "package": "electron-packager . BEECHAT --platform=win32 --arch=x64 --out=../release --asar --app-version=1.0.0 --overwrite --ignore=node_modules"
   },
   "eslintConfig": {
     "extends": [
@@ -63,6 +64,23 @@
     "socket.io-client": "^4.6.1",
     "style-loader": "^3.3.2",
     "webpack": "^5.76.2",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^5.0.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "build": {
+    "productName": "BEECHAT",
+    "appId": "com.BEECHAT.app",
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    }
   }
 }
