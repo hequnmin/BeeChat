@@ -1,13 +1,14 @@
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
-const { app, BrowserWindow,ipcMain } = electron;
+const { app, BrowserWindow, ipcMain, dialog } = electron;
 
 var dgram = require("dgram");
 var client = dgram.createSocket("udp4");
 // var ip = require("ip");
 
-const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
+// const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
+const server_ip = "10.15.46.125";
 const server_port = 65432
 let client_name;
 let peersList = [];
@@ -27,8 +28,9 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       // preload: path.join(__dirname, '/backend/client.js'),
-      contextIsolation: false     //上下文隔离，此参数影响net的使用
-      
+      // preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: false ,    //上下文隔离，此参数影响net的使用
+      enableremotemodule: true,
     }
     
   });
@@ -137,6 +139,22 @@ function createWindow() {
 			}
 		});
 		client.send(msg, server_port, server_ip);
+  })
+
+  ipcMain.on('open_dialog', () => {
+    dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        { name: 'Images', extensions: ['jpg', 'png', 'gif'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    }).then(result => {
+      if (!result.canceled && result.filePaths.length > 0) {
+        const selectedFile = result.filePaths[0];
+        // ipcRenderer.send('selectedFile', selectedFile);
+        mainWindow.webContents.send('selectedFile',selectedFile);
+      }
+    });
   })
 }
 

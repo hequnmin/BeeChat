@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ipcRenderer } from 'electron'
+import { json } from 'body-parser';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,13 +10,25 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('userName', userName);
-    ipcRenderer.send('REGISTER_USER', {name: userName})
+    
+    ipcRenderer.send('REGISTER_USER', { name: userName })
+    var data = {
+      id: userName.length,
+      author: userName,
+      findPeer: userName,
+    }
+    ipcRenderer.send('FIND_USER', data)
+    localStorage.setItem('userName', userName);    
   };
   ipcRenderer.on('register_user', (event, message) => {
     console.log("Login successful!");
     navigate('/chat');
   })
+  ipcRenderer.on('find_user', (event, data) => {
+    let msg = JSON.parse(data);
+    localStorage.setItem('userIp', msg.address); 
+    localStorage.setItem('userPort', msg.port);
+  });
   return (
     <div className="username-form">
       <form >
