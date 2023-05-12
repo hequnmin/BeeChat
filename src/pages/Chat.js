@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ipcRenderer } from 'electron'
 
 import ChatBar from '../components/ChatBar'
@@ -12,18 +12,20 @@ const Chat = () => {
   //   ipcRenderer.on('receive_message', (data) => setmessages([...messages, data]));
   // }, [messages]);
   function addMessage(message) {
-    var data = {
-      id: message.length,
-      author: localStorage.getItem('userName'),
-      message: message,
+    var msg = {
+      userno: localStorage.getItem('userName'),
+      content: message,
       peer: JSON.parse(selectedPeer)
     }
-    setmessages([...messages, data]);
-    ipcRenderer.send('SEND_MESSAGE', data)
+    setmessages([...messages, msg]);
+    ipcRenderer.send('SEND_MESSAGE', msg)
     console.log("LOCAL MESSAGE DATA");
   }
-  ipcRenderer.on('receive_message', (event, data) => {
-    setmessages([...messages, data])
+  ipcRenderer.on('receive_message', (event, message) => {
+    if (message.content.type === "image") {
+
+    }
+    setmessages([...messages,message])
   });
   function SendSelectedPeer(peer) {
     setSelectedPeer(peer);

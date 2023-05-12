@@ -20,9 +20,13 @@ const ChatEmpty = () => {
                     退出聊天
                 </button>
             </div>
-            <Card className="message__container" sx={{height:"90vh"}}>
-                    <ChatIcon></ChatIcon>
-                    <Typography>请选择聊天对象</Typography>
+            <Card sx={{ height: "90vh" }}>
+                <div style={{margin:"20% 50%"}}>
+                <ChatIcon sx={{ fontSize: 50 }}></ChatIcon>
+                <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
+                    请选择聊天对象
+                </Typography>
+                </div>
             </Card>
         </div>
     )
