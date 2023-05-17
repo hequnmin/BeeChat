@@ -22,7 +22,7 @@ const ChatBody = (props) => {
       </header>
       <div className="message__container">
         <div className="message__chats">
-          <MessageList messages={props.messages} />
+          <MessageList messages={props.messages} selectPeer={props.peer } />
         </div>
       </div>
 
