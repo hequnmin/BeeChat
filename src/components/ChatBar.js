@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -8,10 +8,10 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import OnlineList from './OnlineList'
 import FindUser from '../components/FindUser'
-
 const ChatBar = ({ SendSelectedPeer, selectedPeer }) => {
   const [peersList, setPeersList] = useState('');
-  const [online, setOnline] = useState('false');
+  const [searchTerm, setSearchTerm] = useState('');
+
   // useEffect(() => {
   //   ipcRenderer.on('find_user', (data) => setPeersList([...peersList, data]));
   // }, [peersList]);
@@ -25,25 +25,27 @@ const ChatBar = ({ SendSelectedPeer, selectedPeer }) => {
 
   }
   ipcRenderer.on('find_user', (event, data) => {
-    setPeersList([...peersList, data])
+    const msg = JSON.parse(data);
+    if (msg.result === 'success') {
+      setPeersList([...peersList, msg.user])
+    }
+    else {
+      setSearchTerm('2')
+    }
   });
   function OnSelectedPeer(peer) {
     SendSelectedPeer(peer);
   }
-  ipcRenderer.on('PUNCH_SUCCESS', () => {
-    setOnline(true);
-  });
+  // ipcRenderer.on('PUNCH_SUCCESS', () => {
+  //   setOnline(true);
+  // });
+  
   return (
     <div className="chat__sidebar">
-      {/* <div className="chat_user">
-      <div className="chat_username">
-      {localStorage.getItem('userName')}
-      </div>
-      </div> */}
       <List>
         <ListItem alignItems="flex-start">
-          <ListItemAvatar sx={{width:10}}>
-            <Avatar>{localStorage.getItem('userName').substring(0,1)}</Avatar>
+          <ListItemAvatar sx={{ width: 10 }}>
+            <Avatar>{localStorage.getItem('userName').substring(0, 1)}</Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={localStorage.getItem('userName')}
@@ -57,22 +59,21 @@ const ChatBar = ({ SendSelectedPeer, selectedPeer }) => {
                 >
                   {localStorage.getItem('userIp')}
                 </Typography>
-                :{localStorage.getItem('userPort')}
               </React.Fragment>
             }
           />
         </ListItem>
       </List>
       <div>
-        <div className="chat__addUser">
-          <FindUser findPeer={findPeer} />
+        <div className="sidebar__addUser">
+          <FindUser findPeer={findPeer} searchTerm={searchTerm} />
         </div>
-        <h4 className="chat__header">在线用户</h4>
-        <div className="chat__users">
+        <h4 className="sidebar__header">在线用户</h4>
+        <div className="sidebar__users">
           <div>
-            <OnlineList
-              peers={peersList} OnSelectedPeer={OnSelectedPeer} online={online} selectedPeer={selectedPeer}
-            />
+              <OnlineList
+                peers={peersList} OnSelectedPeer={OnSelectedPeer}
+              />
           </div>
         </div>
 

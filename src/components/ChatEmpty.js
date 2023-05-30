@@ -14,7 +14,7 @@ const ChatEmpty = () => {
 
     return (
         <div>
-            <div className="chat__mainHeader">
+            <div className="body__mainHeader">
                 <p>Hangout</p>
                 <button className="leaveChat__btn" onClick={handleLeaveChat}>
                     退出聊天

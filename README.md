@@ -2,6 +2,16 @@
 
 ## 一、主进程与渲染进程通信
 
+peer
+| Syntax   | Description     |
+| -------- | --------------- |
+| userid   | "" |
+| userno   |                 |
+| address  |                 |
+| port     |                 |
+| lastlogin|                 |
+| mac      |                 |
+
 ### 1. 登录
 
 * 发送
@@ -36,10 +46,15 @@
 ```javascript
 ("find_user",
 {
-    username:"name1",
-    userid:1,
-    address:"127.0.0.1",
-    port:1234
+    result:"",
+    user:{
+        userno:"name1",
+        userid:1,
+        address:"127.0.0.1",
+        port:1234,
+        lastlogin:'',
+        mac:''
+    }
 })
 ```
 
@@ -51,6 +66,7 @@
 ("SEND_MESSAGE",
 {
     userno:"name1",
+    time:''
     content:{
         type:"image"
         path:""
@@ -106,7 +122,7 @@
     {
         "sign":"138e222aac1cb49ba0c771ac646de063"
     },
-    "doing":"find",
+    "type":"find",
     "data":
     {
         "entity":"login",
@@ -135,6 +151,9 @@
     }
 }
 ```
+
+### 3.在线心跳✨
+
 
 ## 三、客户端与客户端
 

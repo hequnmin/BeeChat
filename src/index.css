@@ -24,36 +24,31 @@ h2 {
   width: 290px;
   height: 100%;
   background-color: #ffffff;
-  /* flex: 0.2; */
+  flex: 0.25;
   /* padding: 20px; */
   border: 2px solid #EFF0F4;
   border-radius: 10px;
   margin: 0 3px;
 }
-
-.chat__main {
-  height: 100%;
-  flex: 0.8;
-}
-.chat_user {
+.sidebar_user {
   width: 100%;
   height: 10vh;
   display: block;
   align-items: center;
 }
-.chat_username {
+.sidebar_username {
   margin: 0% 55% ;
   display: block;
   width: fit-content;
   padding: 10% 0;
 }
 
-.chat__header {
+.sidebar__header {
   margin: 30px 0 20px 0;
   padding: 0 0 0 10px;
 }
 
-.chat__users>* {
+.sidebar__users>* {
   margin-bottom: 10px;
   color: #607eaa;
   font-size: 14px;
@@ -64,10 +59,19 @@ h2 {
   color: rgb(238, 102, 102);
   font-style: italic;
 }
-
-.chat__mainHeader {
+.chat_body {
+  height: 100%;
+  flex: 0.75;
+  
+}
+.body_main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.body__mainHeader {
   width: 100%;
-  height: 10vh;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -75,6 +79,13 @@ h2 {
   background-color: #ffffff;
   border: 2px solid #EFF0F4;
   border-radius: 10px;
+}
+
+.chat__footer {
+  padding: 0 10px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
 }
 
 .leaveChat__btn {
@@ -90,7 +101,8 @@ h2 {
 
 .message__container {
   width: 100%;
-  height: 69vh;
+  /* height: 67vh; */
+  flex-grow: 1;
   padding: 20px;
   overflow-y: scroll;  
 }
@@ -99,10 +111,6 @@ h2 {
   margin-bottom: 10px;
 }
 
-.chat__footer {
-  padding: 0 10px;
-  height: auto;
-}
 
 .form {
   width: 100%;
@@ -135,38 +143,24 @@ h2 {
   cursor: pointer;
 }
 
-.sendBtn:hover {
-  background-color: rgb(129, 201, 129);
-}
-
-.message__recipient {
-  background-color: #f5ccc2;
-  width: 300px;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 15px;
-}
-
-.message__sender {
-  background-color: rgb(194, 243, 194);
-  max-width: 300px;
-  padding: 10px;
-  border-radius: 10px;
-  margin-left: auto;
-  font-size: 15px;
-}
-
 .message__chats>p {
   font-size: 13px;
 }
 
-.sender__name {
-  text-align: right;
+.message_form{
+  flex-grow: 1;
+  display: flex;
+}
+.message_list{
+  width: fit-content;
+}
+.reverse {
+  display: flex;
+  flex-direction: row-reverse;
+  text-align:right;
 }
 
-.message__status {
-  position: fixed;
-  bottom: 50px;
-  font-size: 13px;
-  font-style: italic;
+.normal {
+  display: flex;
+  flex-direction: row;
 }

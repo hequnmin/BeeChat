@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-// import { TextInput } from 'react-desktop/macOs'
-import { Paper, InputBase, IconButton } from '@mui/material';
+import { Paper, InputBase} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { Padding } from '@mui/icons-material';
-const FindUser = ({ findPeer }) => {
+const FindUser = ({ findPeer ,searchTerm}) => {
     const [peerName, setPeerName] = useState('');
     const handleFind = (e) => {
         e.preventDefault();
         findPeer(peerName);
         setPeerName('');
     };
+ 
     return (
         <Paper
             component="form"
@@ -19,10 +18,11 @@ const FindUser = ({ findPeer }) => {
             <SearchIcon color='primary' />
             <InputBase
                 sx={{ ml: 1, flex: 1 }}
-                placeholder="Search..."
+                placeholder={searchTerm===2?("找不到该用户"):("Search...")}
                 inputProps={{ 'aria-label': 'search peers' }}
                 value={peerName}
                 onChange={(e) => setPeerName(e.target.value)}
+                
             />
         </Paper>
     );

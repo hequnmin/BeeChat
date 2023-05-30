@@ -9,12 +9,15 @@ var client = dgram.createSocket("udp4");
 // var ip = require("ip");
 
 // const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
-const server_ip = "10.15.46.125";
+// const server_ip = "10.15.46.125";
+const server_ip = "192.168.1.114";
 const server_port = 65432
-let client_name;
+const HEARTBEAT_INTERVAL = 5000; // 心跳间隔，单位为毫秒
+let user_info;
 let peersList = [];
 let image = '';
 const appPath = app.getAppPath();
+let sign;
 if (process.env.NODE_ENV === 'development') {
   // Reload the window on file changes when in development mode
   require('electron-reload')(__dirname, {
@@ -50,27 +53,45 @@ function createWindow() {
       switch (msg.type) {
         case "login"://登录成功
           //{"result":{"sign":"138e222aac1cb49ba0c771ac646de063"},"error":{"code":0,"info":""}}
-          mainWindow.webContents.send('register_user', "OK")
+          sign = msg.result.token.sign;
+          user_info = msg.result.user;
+          mainWindow.webContents.send('register_user', JSON.stringify(msg.result.user));
           break;
         case "find"://搜索到对方
           //{"result":[{"userno":"name2","address":"10.15.14.128","port":62004,"lastlogin":"2023-05-04T03:38:24.000Z","mac":"2c:03:c0:72:83:c4"}],"error":{"code":0,"info":""}}
-          if (msg.result[0]) {
-            let src_ip = msg.result[0].address;
-            let src_port = msg.result[0].port;
-            peersList.push(msg.result[0].userno);
-            let ackMessage_finduser = JSON.stringify({
-              username: msg.result[0].userno,
-              userid: peersList.length,
-              address: msg.result[0].address,
-              port: msg.result[0].port
-            });
-            let ackMessage_client = JSON.stringify({
-              type: "holepunch_ack",
-              client_name: client_name
-            });
-            client.send(ackMessage_client, src_port, src_ip);
+          try {
+            if (msg.result[0]) {
+              let src_ip = msg.result[0].address;
+              let src_port = msg.result[0].port;
+              let ackMessage_finduser = {
+                result: "success",
+                user: msg.result[0]
+              };
+              peersList.push(msg.result[0]);
+              let ackMessage_client = JSON.stringify({
+                type: "holepunch_ack",
+                userno: user_info.userno
+              });
+              client.send(ackMessage_client, src_port, src_ip);
 
-            mainWindow.webContents.send('find_user', ackMessage_finduser)
+              mainWindow.webContents.send('find_user', JSON.stringify(ackMessage_finduser))
+            }
+          }
+          catch (err) {
+            let ackMessage_client = JSON.stringify({
+              type: "find_ack",
+              error: {
+                code: 1,
+                info: err
+              }
+            });
+            client.send(ackMessage_client, rinfo.port, rinfo.address);
+            let errorinfo = {
+              result: "",
+              info: "找不到用户！"
+            }
+            mainWindow.webContents.send('find_user', errorinfo)
+
           }
           break;
         case "holepunch_ack"://收到打洞请求回应
@@ -94,29 +115,57 @@ function createWindow() {
           var error = { code: 0, info: '' };
           var response = { type: "rechat_message", result: "ok", error: error };
           client.send(JSON.stringify(response), rinfo.port, rinfo.address);
-          if (msg.content.type === "file") {
-          } else if (msg.content.type === "image") {            
-            image += msg.content.data
-            console.log("Accept Dowload:Size:", image.length)
-            if (image.length>=msg.length) {
-              console.log("finished Dowload:Size:", image.length)
-              let buff = Buffer.from(image, 'base64');
-              let downPath = path.join(appPath, '/downloads');
-              if (!fs.existsSync(downPath)) {
-                fs.mkdirSync(downPath, { recursive: true });
+          switch (msg.content.type) {
+            case "file":
+              break;
+            case "image":
+              image += msg.content.data
+              console.log("Accept Dowload:Size:", image.length)
+              if (image.length >= msg.length) {
+                console.log("finished Dowload:Size:", image.length)
+                let buff = Buffer.from(image, 'base64');
+                let downPath = path.join(appPath, '/downloads');
+                if (!fs.existsSync(downPath)) {
+                  fs.mkdirSync(downPath, { recursive: true });
+                }
+                fs.writeFileSync(path.join(downPath, msg.content.image_name), buff);
+                msg.content.path = path.join(downPath, msg.content.image_name);
+                mainWindow.webContents.send('receive_message', msg);
+                image = '';
               }
-              fs.writeFileSync(path.join(downPath, msg.content.image_name), buff);
-              msg.content.path = path.join(downPath, msg.content.image_name);
+              break;
+            case "text":
               mainWindow.webContents.send('receive_message', msg);
-              image = '';
-            }
-          } else {
-            mainWindow.webContents.send('receive_message', msg)
-
+              break;
+            default:
+              break;
           }
+          // if (msg.content.type === "file") {
+          // } else if (msg.content.type === "image") {
+          //   image += msg.content.data
+          //   console.log("Accept Dowload:Size:", image.length)
+          //   if (image.length >= msg.length) {
+          //     console.log("finished Dowload:Size:", image.length)
+          //     let buff = Buffer.from(image, 'base64');
+          //     let downPath = path.join(appPath, '/downloads');
+          //     if (!fs.existsSync(downPath)) {
+          //       fs.mkdirSync(downPath, { recursive: true });
+          //     }
+          //     fs.writeFileSync(path.join(downPath, msg.content.image_name), buff);
+          //     msg.content.path = path.join(downPath, msg.content.image_name);
+          //     mainWindow.webContents.send('receive_message', msg);
+          //     image = '';
+          //   }
+          // } else {
+          //   mainWindow.webContents.send('receive_message', msg)
+
+          // }
           break;
         case "rechat_message":
           mainWindow.webContents.send('send_message_ok')
+          break;
+        case "heartbeat":
+          mainWindow.webContents.send('heart_beat', msg);
           break;
         default:
           break;
@@ -135,13 +184,13 @@ function createWindow() {
 
   });
   ipcMain.on('REGISTER_USER', (event, message) => {
-    client_name = message.name;
-    console.log(`${client_name}, you are about to register yourself with the Server...`);
+    user_info = { userno: message.name };
+    console.log(`${user_info.userno}, you are about to register yourself with the Server...`);
     let msg = JSON.stringify({
       type: "login",
       data: {
         mac: "2c:03:c0:72:83:c4",
-        userno: client_name,
+        userno: user_info.userno,
         address: "127.0.0.1",
         port: 4000
       }
@@ -154,6 +203,8 @@ function createWindow() {
       type: "chat_message",
       userno: message.userno,
       length: 0,
+      time: message.time,
+      peer: message.peer,
       content: message.content
     };
     if (message.content.type === "file") {
@@ -193,7 +244,7 @@ function createWindow() {
   ipcMain.on('FIND_USER', (event, data) => {
     let msg = JSON.stringify({
       token: {
-        sign: "138e222aac1cb49ba0c771ac646de063",
+        sign: sign,
       },
       type: "find",
       data: {
@@ -211,12 +262,12 @@ function createWindow() {
       properties: ['openFile'],
       filters: [
         { name: 'Images', extensions: ['jpg', 'png', 'gif'] },
-        { name: 'TXT', extensions: ['txt'] },        
+        { name: 'TXT', extensions: ['txt'] },
         { name: 'All Files', extensions: ['*'] }
       ]
     }).then(result => {
       if (!result.canceled && result.filePaths.length > 0) {
-        const selectedFile = {fullpath:result.filePaths[0],info:path.parse(result.filePaths[0])};
+        const selectedFile = { fullpath: result.filePaths[0], info: path.parse(result.filePaths[0]) };
         // {
         //   root: '/',
         //   dir: '/user/thinkpad/desktop/weburl',
@@ -230,4 +281,28 @@ function createWindow() {
   })
 }
 
+// 发送心跳请求
+function sendHeartbeat() {
+  if (peersList.length !== 0) {
+    for (const peer of peersList) {
+      let heartbeatData = {
+        type: 'heartbeat',
+        token: {
+          sign: sign
+        },
+        userid: user_info.userid, // 用户ID
+      };
+      const message = Buffer.from(JSON.stringify(heartbeatData));
+      client.send(message, 0, message.length, peer.port, peer.address, (err) => {
+        if (err) {
+          console.error('Error sending heartbeat:', err);
+        } else {
+          console.log('Heartbeat sent');
+        }
+      })
+    }
+  }
+}
+// 每隔一段时间发送心跳请求
+setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
 app.whenReady().then(createWindow);

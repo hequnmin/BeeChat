@@ -7,8 +7,8 @@ const ChatBody = (props) => {
 
   return (
     <>
-      <header className="chat__mainHeader">
-        <div>{JSON.parse(props.peer).username}</div>
+      <header className="body__mainHeader">
+        <div>{props.peer.username}</div>
         <div>
           <Typography
             sx={{ display: 'inline' }}
@@ -16,12 +16,12 @@ const ChatBody = (props) => {
             variant="body2"
             color="text.primary"
           >
-            {JSON.parse(props.peer).address}:{JSON.parse(props.peer).port}
+            {props.peer.address}:{props.peer.port}
           </Typography>         
         </div>
       </header>
       <div className="message__container">
-        <div className="message__chats">
+        <div className="message__chats" style={{ display: 'flex', flexDirection: 'column' }}>
           <MessageList messages={props.messages} selectPeer={props.peer } />
         </div>
       </div>

@@ -2,32 +2,27 @@ import React, { useState } from 'react'
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ipcRenderer } from 'electron'
-import { json } from 'body-parser';
 
 const Login = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    
+    e.preventDefault();   
     ipcRenderer.send('REGISTER_USER', { name: userName })
-    var data = {
-      id: userName.length,
-      author: userName,
-      findPeer: userName,
-    }
-    ipcRenderer.send('FIND_USER', data)
     localStorage.setItem('userName', userName);    
   };
   ipcRenderer.on('register_user', (event, message) => {
+    let msg = JSON.parse(message);
+    localStorage.setItem('userIp', msg.address); 
+    localStorage.setItem('userPort', msg.port);
     console.log("Login successful!");
     navigate('/chat');
   })
   ipcRenderer.on('find_user', (event, data) => {
     let msg = JSON.parse(data);
-    localStorage.setItem('userIp', msg.address); 
-    localStorage.setItem('userPort', msg.port);
+    localStorage.setItem('userIp', msg.user.address); 
+    localStorage.setItem('userPort', msg.user.port);
   });
   return (
     <div className="username-form">
