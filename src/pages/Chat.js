@@ -24,9 +24,6 @@ const Chat = () => {
     console.log("LOCAL MESSAGE DATA",msg);
   }
   ipcRenderer.on('receive_message', (event, message) => {
-    if (message.content.type === "image") {
-
-    }
     setmessages([...messages, message])
   });
   function SendSelectedPeer(peer) {

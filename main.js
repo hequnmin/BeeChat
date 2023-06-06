@@ -2,6 +2,7 @@ const electron = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const moment = require('moment');
 const { app, BrowserWindow, ipcMain, dialog } = electron;
 
 var dgram = require("dgram");
@@ -55,6 +56,7 @@ function createWindow() {
           //{"result":{"sign":"138e222aac1cb49ba0c771ac646de063"},"error":{"code":0,"info":""}}
           sign = msg.result.token.sign;
           user_info = msg.result.user;
+          console.log(`${user_info.userno}, you are about to register yourself with the Server...`);
           mainWindow.webContents.send('register_user', JSON.stringify(msg.result.user));
           break;
         case "find"://搜索到对方
@@ -115,6 +117,7 @@ function createWindow() {
           var error = { code: 0, info: '' };
           var response = { type: "rechat_message", result: "ok", error: error };
           client.send(JSON.stringify(response), rinfo.port, rinfo.address);
+          msg.time = moment().format('YYYY-MM-DD HH:mm:ss');
           switch (msg.content.type) {
             case "file":
               break;
@@ -125,6 +128,7 @@ function createWindow() {
                 console.log("finished Dowload:Size:", image.length)
                 let buff = Buffer.from(image, 'base64');
                 let downPath = path.join(appPath, '/downloads');
+                console.log(appPath);
                 if (!fs.existsSync(downPath)) {
                   fs.mkdirSync(downPath, { recursive: true });
                 }
@@ -185,7 +189,6 @@ function createWindow() {
   });
   ipcMain.on('REGISTER_USER', (event, message) => {
     user_info = { userno: message.name };
-    console.log(`${user_info.userno}, you are about to register yourself with the Server...`);
     let msg = JSON.stringify({
       type: "login",
       data: {
@@ -203,7 +206,7 @@ function createWindow() {
       type: "chat_message",
       userno: message.userno,
       length: 0,
-      time: message.time,
+      time: moment().format('YYYY-MM-DD HH:mm:ss'),
       peer: message.peer,
       content: message.content
     };
