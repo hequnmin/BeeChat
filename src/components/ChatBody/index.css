@@ -1,0 +1,27 @@
+.message_container {
+    width: 100%;
+    height: 70px;
+    flex-grow: 1;
+    padding: 20px;
+    
+  }
+  .message_container>* {
+    margin-bottom: 10px;
+  }
+  .message_chats>p {
+    font-size: 13px;
+  }
+  
+  .message_list{
+    width: fit-content;
+  }
+  .reverse {
+    display: flex;
+    flex-direction: row-reverse;
+    text-align:right;
+  }
+  
+  .normal {
+    display: flex;
+    flex-direction: row;
+  }

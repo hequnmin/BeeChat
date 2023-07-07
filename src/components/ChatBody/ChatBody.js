@@ -1,10 +1,11 @@
 import React from 'react';
-import {Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 
-import MessageList from './MessageList'
+import MessageList from '../MessageList'
+import ScrollToBottomContainer from '../../utils/ScrollToBottomContainer'
+import "./index.css";
 
 const ChatBody = (props) => {
-
   return (
     <>
       <header className="body__mainHeader">
@@ -17,15 +18,21 @@ const ChatBody = (props) => {
             color="text.primary"
           >
             {props.peer.address}:{props.peer.port}
-          </Typography>         
+          </Typography>
         </div>
       </header>
-      <div className="message__container">
+      {/* <div ref={scrollWrapperRef} className="message__container">
         <div className="message__chats" style={{ display: 'flex', flexDirection: 'column' }}>
           <MessageList messages={props.messages} selectPeer={props.peer } />
         </div>
+      </div> */}
+      <div className="message_container">
+        <ScrollToBottomContainer>
+          <div className="message_chats" style={{ display: 'flex', flexDirection: 'column' }}>
+            <MessageList messages={props.messages} selectPeer={props.peer} />
+          </div>
+        </ScrollToBottomContainer>
       </div>
-
     </>
   );
 };

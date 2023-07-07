@@ -1,7 +1,9 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card} from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+
+import "./index.css";
 
 const ChatEmpty = () => {
     const navigate = useNavigate();
@@ -13,19 +15,22 @@ const ChatEmpty = () => {
     };
 
     return (
-        <div>
+        <div className='container'>
             <div className="body__mainHeader">
                 <p>Hangout</p>
                 <button className="leaveChat__btn" onClick={handleLeaveChat}>
                     退出聊天
                 </button>
             </div>
-            <Card sx={{ height: "90vh" }}>
-                <div style={{margin:"20% 50%"}}>
-                <ChatIcon sx={{ fontSize: 50 }}></ChatIcon>
-                <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-                    请选择聊天对象
-                </Typography>
+            <Card className='body_body'>
+                <div className='chat_container'>
+                    <div className='chat_icon'>
+                    <ChatIcon sx={{ fontSize: 50 }}></ChatIcon>
+                    </div>
+                    
+                    <div className='chat_line'>
+                        请选择聊天对象
+                    </div>
                 </div>
             </Card>
         </div>

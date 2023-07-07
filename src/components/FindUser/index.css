@@ -1,0 +1,16 @@
+.input_control{
+    width: 100%;
+    padding: .375rem .75rem;
+    background-color: #fff;
+    /* background-clip: padding-box; */
+    /* border: 1px solid #ced4da; */
+    appearance: none;
+    border-radius: .25rem;
+}
+form:focus-within {
+    color: #212529;
+    background-color: #fff;
+    border-color: #3f50b5;
+    outline: 0;
+    box-shadow: 0 0 0 .1rem rgba(13,110,253,0.25);    
+}

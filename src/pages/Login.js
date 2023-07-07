@@ -8,22 +8,24 @@ const Login = () => {
   const [userName, setUserName] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();   
+    e.preventDefault();
     ipcRenderer.send('REGISTER_USER', { name: userName })
-    localStorage.setItem('userName', userName);    
+    localStorage.setItem('userName', userName);
   };
   ipcRenderer.on('register_user', (event, message) => {
     let msg = JSON.parse(message);
-    localStorage.setItem('userIp', msg.address); 
+    localStorage.setItem('userIp', msg.address);
     localStorage.setItem('userPort', msg.port);
     console.log("Login successful!");
     navigate('/chat');
   })
-  ipcRenderer.on('find_user', (event, data) => {
-    let msg = JSON.parse(data);
-    localStorage.setItem('userIp', msg.user.address); 
-    localStorage.setItem('userPort', msg.user.port);
-  });
+  // ipcRenderer.on('find_user', (event, data) => {
+  //   let msg = JSON.parse(data);
+  //   if (msg.result) {
+  //     localStorage.setItem('userIp', msg.info.address);
+  //     localStorage.setItem('userPort', msg.info.port);
+  //   }
+  // });
   return (
     <div className="username-form">
       <form >

@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { ipcRenderer } from 'electron'
 import moment from 'moment';
 
-import ChatBar from '../components/ChatBar'
-import ChatBody from '../components/ChatBody'
-import ChatFooter from '../components/ChatFooter'
-import ChatEmpty from '../components/ChatEmpty'
+import ChatBar from '../components/ChatBar/ChatBar'
+import ChatBody from '../components/ChatBody/ChatBody'
+import ChatFooter from '../components/ChatFooter/ChatFooter'
+import ChatEmpty from '../components/ChatEmpty/ChatEmpty'
 const Chat = () => {
   const [messages, setmessages] = useState([]);
   const [selectedPeer, setSelectedPeer] = useState('');
