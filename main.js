@@ -2,7 +2,8 @@ const electron = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
-const moment = require('moment');
+// const moment = require('moment');
+const dayjs = require('dayjs');
 const { app, BrowserWindow, ipcMain, dialog } = electron;
 var dgram = require("dgram");
 var client = dgram.createSocket("udp4");
@@ -146,7 +147,7 @@ function createWindow() {
           var error = { code: 0, info: '' };
           var response = { type: "rechat_message", result: "ok", error: error };
           client.send(JSON.stringify(response), rinfo.port, rinfo.address);
-          msg.time = moment().format('YYYY-MM-DD HH:mm:ss');
+          msg.time = dayjs().format('YYYY-MM-DD HH:mm:ss');
           switch (msg.content.type) {
             case "file":
               break;
@@ -235,7 +236,7 @@ function createWindow() {
       type: "chat_message",
       userno: message.userno,
       length: 0,
-      time: moment().format('YYYY-MM-DD HH:mm:ss'),
+      time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       peer: message.peer,
       content: message.content
     };
