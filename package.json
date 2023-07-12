@@ -22,7 +22,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch": "webpack --config webpack.config.js --watch",
-    "package": "electron-packager . BEECHAT --platform=win32 --arch=x64 --out=../release --asar --app-version=1.0.0 --overwrite --ignore=node_modules"
+    "package": "electron-packager . BEECHAT --platform=win32 --arch=x64 --out=./release --app-version=1.0.0 --overwrite --asar --icon=./src/assets/image/chat_icon.ico --ignore=node_modules --extra-resource=node_modules/dayjs --extra-resource=node_modules/ip"
   },
   "eslintConfig": {
     "extends": [
@@ -62,19 +62,25 @@
     "productName": "BEECHAT",
     "appId": "com.BEECHAT.app",
     "directories": {
-      "output": "release"
+      "output": "./release"
     },
+    "files":[
+      
+    ],
     "mac": {
+      "icon":"./src/assets/image/chat_icon.ico",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
+      "icon":"./src/assets/image/chat_icon.ico",
       "target": [
         "nsis",
         "zip"
-      ]
+      ],
+      "arch":["ia32"]
     }
   }
 }
