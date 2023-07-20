@@ -5,12 +5,16 @@ const url = require('url');
 // const moment = require('moment');
 const dayjs = require('dayjs');
 const { app, BrowserWindow, ipcMain, dialog } = electron;
+
+const Store = require('electron-store');
+const store = new Store();
+
 var dgram = require("dgram");
 var client = dgram.createSocket("udp4");
 var ip = require("ip");
 // const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
 // const server_ip = "10.15.46.125";
-const server_ip = "192.168.1.114";
+const server_ip = process.env.npm_package_config_server_ip;
 const server_port = 65432;
 let local_ip,local_port = null;
 const HEARTBEAT_INTERVAL = 5000; // 心跳间隔，单位为毫秒
@@ -71,6 +75,7 @@ function createWindow() {
           user_info = msg.result.user;
           console.log(`${user_info.userno}, you are about to register yourself with the Server...`);
           mainWindow.webContents.send('register_user', JSON.stringify(msg.result.user));
+          store.set('userinfo',user_info);
           break;
         case "find"://搜索到对方
           //{"result":[{"userno":"name2","address":"10.15.14.128","port":62004,"lastlogin":"2023-05-04T03:38:24.000Z","mac":"2c:03:c0:72:83:c4"}],"error":{"code":0,"info":""}}
@@ -93,12 +98,14 @@ function createWindow() {
               if (result.address === user_info.address) {
                 client.send(ackMessage_client, result.portlocal, result.addresslocal);
                 peer.address = result.addresslocal;
-                peer.port = result.portlocal;
-                peersList.push(peer);
+                peer.port = result.portlocal;            
               }
               else {
                 client.send(ackMessage_client, result.port, result.address);
+                peer.address = result.address;
+                peer.port = result.port;
               }
+              peersList.push(peer);
               timerHolepunch = setTimeout(() => {
 
 
@@ -122,7 +129,6 @@ function createWindow() {
               info: err
             }
             mainWindow.webContents.send('find_user', errorinfo)
-
           }
           break;
         case "holepunch_ack"://收到打洞请求回应

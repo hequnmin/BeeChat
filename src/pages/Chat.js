@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ipcRenderer } from 'electron'
-import moment from 'moment';
+import dayjs from 'dayjs'
 
 import ChatBar from '../components/ChatBar/ChatBar'
 import ChatBody from '../components/ChatBody/ChatBody'
@@ -15,7 +15,7 @@ const Chat = () => {
   function addMessage(message) {
     var msg = {
       userno: localStorage.getItem('userName'),
-      time: moment().format('YYYY-MM-DD HH:mm:ss'),
+      time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       content: message,
       peer: selectedPeer
     }

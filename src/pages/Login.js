@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ipcRenderer } from 'electron'
@@ -6,7 +6,7 @@ import { ipcRenderer } from 'electron'
 const Login = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
     ipcRenderer.send('REGISTER_USER', { name: userName })
@@ -19,13 +19,6 @@ const Login = () => {
     console.log("Login successful!");
     navigate('/chat');
   })
-  // ipcRenderer.on('find_user', (event, data) => {
-  //   let msg = JSON.parse(data);
-  //   if (msg.result) {
-  //     localStorage.setItem('userIp', msg.info.address);
-  //     localStorage.setItem('userPort', msg.info.port);
-  //   }
-  // });
   return (
     <div className="username-form">
       <form >

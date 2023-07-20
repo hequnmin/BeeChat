@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron'
 
 import { List, ListItemText, ListItemButton, Avatar, ListItemAvatar } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-
+import DeleteIcon from '@mui/icons-material/Delete'
 const OnlineList = ({ peers, OnSelectedPeer }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const [online, setOnline] = useState({});
@@ -48,10 +48,10 @@ const OnlineList = ({ peers, OnSelectedPeer }) => {
               className='list_button'
               selected={selectedIndex === index}
               sx={{
-                border: "1px solid #ffffff",borderRadius:"5px",width:"auto",backgroundColor:"#ffffff",margin:"5px 10px"
+                border: "1px solid #ffffff", borderRadius: "5px", width: "auto", backgroundColor: "#ffffff", margin: "5px 10px",alignItems:"flex-start"
               }}
               onClick={() => handleListItemClick(peer, index)}>
-              <ListItemAvatar sx={{ width: 10 }}>
+              <ListItemAvatar sx={{ width: 10,height:"100%" }}>
                 <Avatar>{(peer).userno.substring(0, 1)}</Avatar>
               </ListItemAvatar>
               <ListItemText color="secondary" size="medium"
@@ -62,8 +62,11 @@ const OnlineList = ({ peers, OnSelectedPeer }) => {
                     <span><FiberManualRecordIcon sx={{ fontSize: 15, color: '#C3C3C3' }} /><span>离线</span></span>
                   )}
               >
-
+               
               </ListItemText>
+              <ListItemAvatar sx={{ width: "12px", height: "12px" ,display:"flex",justifyContent:'flex-end'}}>
+                  <DeleteIcon color="primary" sx={{ fontSize: 16 }}/>
+                </ListItemAvatar>
             </ListItemButton>
           </div>
 

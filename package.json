@@ -10,6 +10,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.11.12",
     "dayjs": "^1.11.9",
+    "electron-store": "^8.1.0",
     "ip": "^1.1.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -64,23 +65,26 @@
     "directories": {
       "output": "./release"
     },
-    "files":[
-      
-    ],
+    "files": [],
     "mac": {
-      "icon":"./src/assets/image/chat_icon.ico",
+      "icon": "./src/assets/image/chat_icon.ico",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
-      "icon":"./src/assets/image/chat_icon.ico",
+      "icon": "./src/assets/image/chat_icon.ico",
       "target": [
         "nsis",
         "zip"
       ],
-      "arch":["ia32"]
+      "arch": [
+        "ia32"
+      ]
     }
+  },
+  "config": {
+    "server_ip ": "192.168.1.114"
   }
 }
