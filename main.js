@@ -2,23 +2,29 @@ const electron = require('electron');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
-const moment = require('moment');
+// const moment = require('moment');
+const dayjs = require('dayjs');
 const { app, BrowserWindow, ipcMain, dialog } = electron;
+
+const Store = require('electron-store');
+const store = new Store();
 
 var dgram = require("dgram");
 var client = dgram.createSocket("udp4");
-// var ip = require("ip");
-
+var ip = require("ip");
 // const server_ip = "10.15.5.151"; //Sever IP and port will prob be obtained from calling arguments or something, hardcoded atm
 // const server_ip = "10.15.46.125";
-const server_ip = "192.168.1.114";
-const server_port = 65432
+const server_ip = process.env.npm_package_config_server_ip;
+const server_port = 65432;
+let local_ip,local_port = null;
 const HEARTBEAT_INTERVAL = 5000; // 心跳间隔，单位为毫秒
 let user_info;
 let peersList = [];
 let image = '';
 const appPath = app.getAppPath();
 let sign;
+let timerFind, timerHolepunch = null;
+const timeout = 1000; // 设置等待时间为1秒
 if (process.env.NODE_ENV === 'development') {
   // Reload the window on file changes when in development mode
   require('electron-reload')(__dirname, {
@@ -41,12 +47,23 @@ function createWindow() {
     }
 
   });
-  // mainWindow.menuBarVisible = false;
+  mainWindow.menuBarVisible = false;
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, './index.html'),
     protocol: 'file:',
     slashes: true
   }))
+  client.bind(() => {
+    const addressLocal = client.address();
+    local_ip = ip.address();
+    local_port = addressLocal.port;
+
+    console.log('本机局域网内 IP:', local_ip);
+    console.log('本机端口号:', local_port);
+
+    // 关闭 Socket
+    // client.close();
+  });
   client.on("message", (msg, rinfo) => {
     msg = JSON.parse(msg);
 
@@ -58,23 +75,42 @@ function createWindow() {
           user_info = msg.result.user;
           console.log(`${user_info.userno}, you are about to register yourself with the Server...`);
           mainWindow.webContents.send('register_user', JSON.stringify(msg.result.user));
+          store.set('userinfo',user_info);
           break;
         case "find"://搜索到对方
           //{"result":[{"userno":"name2","address":"10.15.14.128","port":62004,"lastlogin":"2023-05-04T03:38:24.000Z","mac":"2c:03:c0:72:83:c4"}],"error":{"code":0,"info":""}}
           try {
             if (msg.result[0]) {
-              let src_ip = msg.result[0].address;
-              let src_port = msg.result[0].port;
-              let ackMessage_finduser = {
-                result: "success",
-                user: msg.result[0]
+              let result = msg.result[0];
+              let peer = {
+                userid: result.userid,
+                userno:result.userno,
               };
-              peersList.push(msg.result[0]);
+              let ackMessage_finduser = {
+                result: true,
+                info: result
+              };             
               let ackMessage_client = JSON.stringify({
                 type: "holepunch_ack",
                 userno: user_info.userno
               });
-              client.send(ackMessage_client, src_port, src_ip);
+              
+              if (result.address === user_info.address) {
+                client.send(ackMessage_client, result.portlocal, result.addresslocal);
+                peer.address = result.addresslocal;
+                peer.port = result.portlocal;            
+              }
+              else {
+                client.send(ackMessage_client, result.port, result.address);
+                peer.address = result.address;
+                peer.port = result.port;
+              }
+              peersList.push(peer);
+              timerHolepunch = setTimeout(() => {
+
+
+              }, timeout);
+              clearTimeout(timerFind);
 
               mainWindow.webContents.send('find_user', JSON.stringify(ackMessage_finduser))
             }
@@ -90,10 +126,9 @@ function createWindow() {
             client.send(ackMessage_client, rinfo.port, rinfo.address);
             let errorinfo = {
               result: "",
-              info: "找不到用户！"
+              info: err
             }
             mainWindow.webContents.send('find_user', errorinfo)
-
           }
           break;
         case "holepunch_ack"://收到打洞请求回应
@@ -112,12 +147,13 @@ function createWindow() {
           break;
         case "holepunch_success"://收到打洞请求回应
           console.log(`Received holepunch success from ${msg.client_name} (${rinfo.address}:${rinfo.port})`);
+          clearTimeout(timerHolepunch);
           break;
         case "chat_message":
           var error = { code: 0, info: '' };
           var response = { type: "rechat_message", result: "ok", error: error };
           client.send(JSON.stringify(response), rinfo.port, rinfo.address);
-          msg.time = moment().format('YYYY-MM-DD HH:mm:ss');
+          msg.time = dayjs().format('YYYY-MM-DD HH:mm:ss');
           switch (msg.content.type) {
             case "file":
               break;
@@ -194,8 +230,8 @@ function createWindow() {
       data: {
         mac: "2c:03:c0:72:83:c4",
         userno: user_info.userno,
-        address: "127.0.0.1",
-        port: 4000
+        address: local_ip,
+        port: local_port
       }
     });
     client.send(msg, server_port, server_ip);
@@ -206,7 +242,7 @@ function createWindow() {
       type: "chat_message",
       userno: message.userno,
       length: 0,
-      time: moment().format('YYYY-MM-DD HH:mm:ss'),
+      time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       peer: message.peer,
       content: message.content
     };
@@ -243,7 +279,6 @@ function createWindow() {
     }
     // client.send(JSON.stringify(msg), message.peer.port, message.peer.address);
   })
-
   ipcMain.on('FIND_USER', (event, data) => {
     let msg = JSON.stringify({
       token: {
@@ -258,6 +293,17 @@ function createWindow() {
       }
     });
     client.send(msg, server_port, server_ip);
+
+    // 启动定时器
+    timerFind = setTimeout(() => {
+      let errorinfo = JSON.stringify(
+        {
+          result: false,
+          info: "找不到用户！"
+        }
+      );
+      mainWindow.webContents.send('find_user', errorinfo)
+    }, timeout);
   })
 
   ipcMain.on('open_dialog', () => {
@@ -308,4 +354,5 @@ function sendHeartbeat() {
 }
 // 每隔一段时间发送心跳请求
 setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
+
 app.whenReady().then(createWindow);

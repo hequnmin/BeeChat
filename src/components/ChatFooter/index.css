@@ -1,0 +1,22 @@
+.chat__footer {
+    padding: 0 10px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+  }
+  .message_form{
+    flex-grow: 1;
+    display: flex;
+  }
+  .sendBtn {
+    width: 80px;
+    height: fit-content;
+    background-color: #3f50b5;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    color: #eae3d2;
+    cursor: pointer;
+  }
+  

@@ -1,7 +1,6 @@
 // import './App.css';
 import React, { Component } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import io from 'socket.io-client';
 
 import Login from './pages/Login'
 import Chat from './pages/Chat'

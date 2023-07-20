@@ -1,7 +1,6 @@
 const path = require('path');
-
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: './src/index.js',
   devtool: 'inline-source-map',
   target: 'electron-renderer',
@@ -42,5 +41,5 @@ module.exports = {
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, 'build'),
-  },
+  }
 };

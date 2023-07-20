@@ -4,6 +4,8 @@ import { Button, Divider, IconButton, TextField } from '@mui/material';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import PanoramaOutlinedIcon from '@mui/icons-material/PanoramaOutlined';
 
+import "./index.css";
+
 const ChatFooter = ({ addMessage }) => {
     const [message, setmessage] = useState('');
     const [imageUrl, setImageUrl] = useState("");

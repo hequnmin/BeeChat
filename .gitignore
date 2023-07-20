@@ -2,5 +2,8 @@
 
 /node_modules
 /build
+/beechat-win32-x64
+/release
 
 
+out/
