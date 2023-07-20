@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron'
 
 import { List, ListItemText, ListItemButton, Avatar, ListItemAvatar } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import DeleteIcon from '@mui/icons-material/Delete'
+// import DeleteIcon from '@mui/icons-material/Delete'
 const OnlineList = ({ peers, OnSelectedPeer }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const [online, setOnline] = useState({});
@@ -64,9 +64,9 @@ const OnlineList = ({ peers, OnSelectedPeer }) => {
               >
                
               </ListItemText>
-              <ListItemAvatar sx={{ width: "12px", height: "12px" ,display:"flex",justifyContent:'flex-end'}}>
+              {/* <ListItemAvatar sx={{ width: "12px", height: "12px" ,display:"flex",justifyContent:'flex-end'}}>
                   <DeleteIcon color="primary" sx={{ fontSize: 16 }}/>
-                </ListItemAvatar>
+                </ListItemAvatar> */}
             </ListItemButton>
           </div>
 
